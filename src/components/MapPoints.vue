@@ -68,7 +68,6 @@
                 placemark.events.add('drag', () => {
                     this.refreshPolyline();
                 });
-                console.dir(placemark);
 
                 const order = ++this.pointCounter;
                 this.points.push({placemark, name, order});
@@ -96,8 +95,6 @@
                 this.map.geoObjects.add(this.polyline);
             },
             handleChange(ev) {
-                console.log('changed');
-                console.dir(ev);
                 this.refreshPolyline();
             },
             getComponentData() {
