@@ -2,7 +2,7 @@
     <div>
         <div>
             <span v-for="point in points">
-                {{ point }}
+                {{ point.coords }}
             </span>
         </div>
         <div id="map" style="width: 600px; height: 400px"></div>
@@ -23,14 +23,27 @@
                     async: true
                 });
             },
+            addPoint(coords) {
+                console.dir(this.map);
+                const balloon = new ymaps.Placemark(coords, {
+                    balloonContentHeader: "Балун метки"
+                });
+                this.points.push({ coords, balloon });
+                this.map.geoObjects.add(balloon);
+            },
+            deletePoint(index) {
+                this.map.geoObjects.del(this.points[index].balloon);
+                this.points.splice(index, 1);
+            }
         },
         mounted() {
             const handleClick = (e) => {
-                this.points.push(e.get('coords'));
-                console.dir(this.points);
+                this.addPoint(e.get('coords'));
             };
 
-            this.loadJs('https://api-maps.yandex.ru/2.1/?apikey=84058bf3-7dd7-4fb0-a8b6-729d56f01663&lang=ru_RU', function () {
+            let map = this.map;
+
+            this.loadJs('https://api-maps.yandex.ru/2.1/?apikey=84058bf3-7dd7-4fb0-a8b6-729d56f01663&lang=ru_RU', () => {
                 ymaps.ready(() => {
                     this.map = new ymaps.Map("map", {
                         center: [55.76, 37.64],
