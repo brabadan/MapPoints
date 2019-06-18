@@ -1,9 +1,9 @@
 <template>
     <div>
         <div>
-            <span v-for="point in points">
+            <button v-for="(point, index) in points" v-on:click="removePoint(index)">
                 {{ point.coords }}
-            </span>
+            </button>
         </div>
         <div id="map" style="width: 600px; height: 400px"></div>
     </div>
@@ -28,11 +28,12 @@
                 const balloon = new ymaps.Placemark(coords, {
                     balloonContentHeader: "Балун метки"
                 });
-                this.points.push({ coords, balloon });
+                this.points.push({coords, balloon});
                 this.map.geoObjects.add(balloon);
             },
-            deletePoint(index) {
-                this.map.geoObjects.del(this.points[index].balloon);
+            removePoint(index) {
+                console.log('clicked');
+                this.map.geoObjects.remove(this.points[index].balloon);
                 this.points.splice(index, 1);
             }
         },
@@ -55,7 +56,7 @@
 
             });
         },
-        data () {
+        data() {
             return {
                 points: [],
                 map: {},
