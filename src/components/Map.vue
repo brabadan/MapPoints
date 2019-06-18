@@ -30,11 +30,26 @@
                 });
                 this.points.push({coords, balloon});
                 this.map.geoObjects.add(balloon);
+
+                this.refreshPolyline();
             },
             removePoint(index) {
                 console.log('clicked');
                 this.map.geoObjects.remove(this.points[index].balloon);
                 this.points.splice(index, 1);
+            },
+            refreshPolyline() {
+                this.map.geoObjects.remove(this.polyline);
+
+                this.polyline = new ymaps.Polyline(this.points.map(point => point.coords), {}, {
+                    // Задаем опции геообъекта.
+                    // Цвет с прозрачностью.
+                    strokeColor: "#00000088",
+                    // Ширину линии.
+                    strokeWidth: 4,
+                });
+
+                this.map.geoObjects.add(this.polyline);
             }
         },
         mounted() {
@@ -52,6 +67,14 @@
                     });
 
                     this.map.events.add('click', handleClick);
+
+                    this.polyline = new ymaps.Polyline([
+                        this.points.map(point => point.coords)
+                    ], {}, {});
+
+                    this.map.geoObjects.add(this.polyline);
+
+                    console.dir(this.polyline);
                 });
 
             });
@@ -60,6 +83,7 @@
             return {
                 points: [],
                 map: {},
+                polyline: {}
             }
         },
     }
