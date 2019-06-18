@@ -1,7 +1,9 @@
 <template>
     <div>
         <div>
-            dfcv
+            <span v-for="point in points">
+                {{ point }}
+            </span>
         </div>
         <div id="map" style="width: 600px; height: 400px"></div>
     </div>
@@ -9,6 +11,7 @@
 
 <script>
     import $ from 'jquery';  // подключаем jQuery
+
     export default {
         name: "map",
         methods: {
@@ -19,20 +22,34 @@
                     success: callback,
                     async: true
                 });
-            }
+            },
         },
         mounted() {
+            const handleClick = (e) => {
+                this.points.push(e.get('coords'));
+                console.dir(this.points);
+            };
+
             this.loadJs('https://api-maps.yandex.ru/2.1/?apikey=84058bf3-7dd7-4fb0-a8b6-729d56f01663&lang=ru_RU', function () {
-                ymaps.ready(function(){
-                    var map = new ymaps.Map("map", {
+                ymaps.ready(() => {
+                    this.map = new ymaps.Map("map", {
                         center: [55.76, 37.64],
                         zoom: 7
                     });
+
+                    this.map.events.add('click', handleClick);
                 });
 
             });
         },
+        data () {
+            return {
+                points: [],
+                map: {},
+            }
+        },
     }
+
 </script>
 
 <style scoped>
