@@ -1,10 +1,11 @@
 <template>
     <div class="container">
         <div class="input-list">
-            <sui-input
+            <input
                     placeholder="Новая точка маршрута"
                     v-model="newPointName"
                     v-on:keyup="onEnter"
+                    style="width: calc(100% - 4px); height: 3em"
             />
 
             <draggable
@@ -13,7 +14,7 @@
                     v-model="points"
                     v-bind="dragOptions"
                     @start="isDragging = true"
-                    @end="isDragging = false"
+                    @end="handleChange"
                     :component-data="getComponentData()"
             >
                 <transition-group type="transition" name="flip-list">
@@ -22,9 +23,8 @@
                             v-for="(point, index) in points"
                             :key="point.order"
                     >
-                        {{ point.name }}
+                        <span>{{ point.name }}</span>
                         <button
-                                size="small"
                                 v-on:click="removePoint(index)"
                         >
                             x
@@ -32,9 +32,10 @@
                     </div>
                 </transition-group>
             </draggable>
+
         </div>
 
-        <div id="map" style="width: 600px; height: 400px"></div>
+        <div id="map-points" style="width: 60vw; max-width: 700px; height: 50vw; max-height: 70vh;"></div>
     </div>
 </template>
 
@@ -43,7 +44,7 @@
     import draggable from "vuedraggable";
 
     export default {
-        name: "map",
+        name: "map-points",
         components: {
             draggable,
         },
@@ -94,33 +95,23 @@
 
                 this.map.geoObjects.add(this.polyline);
             },
-            handleChange() {
+            handleChange(ev) {
                 console.log('changed');
-                console.dir(this.points);
+                console.dir(ev);
                 this.refreshPolyline();
-            },
-            inputChanged(value) {
-                this.activeNames = value;
             },
             getComponentData() {
                 return {
-                    on: {
-                        change: this.handleChange,
-                        input: this.inputChanged
-                    },
                     attrs: {
                         wrap: true
                     },
-                    props: {
-                        value: this.activeNames
-                    }
                 };
             }
         },
         mounted() {
             this.loadJs('https://api-maps.yandex.ru/2.1/?apikey=84058bf3-7dd7-4fb0-a8b6-729d56f01663&lang=ru_RU', () => {
                 ymaps.ready(() => {
-                    this.map = new ymaps.Map("map", {
+                    this.map = new ymaps.Map("map-points", {
                         center: [55.76, 37.64],
                         zoom: 7
                     });
@@ -154,11 +145,16 @@
 <style scoped>
     .container {
         display: flex;
+        margin: 5%;
+        align-content: center;
+        justify-content: center;
     }
 
     .input-list {
-        width: 40%;
+        width: 30%;
+        max-width: 280px;
         text-align: end;
+        margin-right: 12px;
     }
 
     .flip-list-move {
@@ -176,13 +172,20 @@
 
     .list-group {
         min-height: 20px;
+        padding: 0;
     }
 
     .list-group-item {
         cursor: move;
+        position: relative;
+        display: block;
+        padding: 10px 15px;
+        margin-bottom: -1px;
+        background-color: #fff;
+        border: 1px solid #ddd;
     }
 
-    .list-group-item i {
-        cursor: pointer;
+    .list-group-item span {
+        float: left;
     }
 </style>
